@@ -1,4 +1,5 @@
 
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 public class Percolation {
@@ -16,9 +17,9 @@ public class Percolation {
             throw new java.lang.IllegalArgumentException("n is <= 0"); 
         }
         grid = new boolean[n * n];
+        bottom = n + 1;
         rowSize = n;
         gridSize = n * n;
-        bottom = gridSize + 1;
         wqf = new WeightedQuickUnionUF(gridSize + 2);
     }
     
@@ -28,11 +29,10 @@ public class Percolation {
         return row * rowSize + col;
     }
     
-    private boolean checkBounds(int idx) {
+    private void checkBounds(int idx) {
         if (idx > gridSize || idx < 0) {
             throw new java.lang.IndexOutOfBoundsException("Out of bounds.");
         }
-        return true;
     }
     
     
@@ -44,10 +44,12 @@ public class Percolation {
         // Update wqf
         
         if (row == 1) {
-            wqf.union(toIndex(row, col), top);
+        	StdOut.println("Union with top");
+        	wqf.union(toIndex(row, col), top);
         }
         
-        if (row == bottom) {
+        if (row == rowSize) {
+        	StdOut.println("Union with bottom");
             wqf.union(toIndex(row, col), bottom);
         }
         
@@ -56,24 +58,28 @@ public class Percolation {
         // Left
         int leftIdx = toIndex(row - 1, col);
         if (adjRow - 1 >= 0 && isOpen(row - 1, col)) {
+//        	StdOut.println("Row: " + row + ", " + "Col: " + col + "Index :" + idx + "Adj Index: " + leftIdx);
             wqf.union(idx, leftIdx);
         }
         
         // Right
         int rightIdx = toIndex(row + 1, col);
         if (adjRow + 1 < rowSize && isOpen(row + 1, col)) {
+//        	StdOut.println("Row: " + row + ", " + "Col: " + col + " Index :" + idx + " Adj Index: " + rightIdx);
             wqf.union(idx, rightIdx);
         }
         
         // Top
         int topIdx = toIndex(row, col + 1);
         if (adjCol + 1 < rowSize && isOpen(row, col + 1)) {
+//        	StdOut.println("Row: " + row + ", " + "Col: " + col + " Index :" + idx + " Adj Index: " + topIdx);
             wqf.union(idx, topIdx);
         }
         
         // Top
         int bottomIdx = toIndex(row, col - 1);
         if (adjCol - 1 >= 0 && isOpen(row, col - 1)) {
+//        	StdOut.println("Row: " + row + ", " + "Col: " + col + " Index :" + idx + " Adj Index: " + bottomIdx);
             wqf.union(idx, bottomIdx);
         }
     }
@@ -105,6 +111,7 @@ public class Percolation {
     }
     
     public boolean percolates() {
+        
         return wqf.connected(top, bottom);
     }
     
